@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+
+
+  <meta name="keywords" content="Spring," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="关于 IOC 和 DIIOC 是指将 bean 的创建工作交由 Spring 来完成，而不是传统的在哪用就在哪手动 new DI 是在 IOC 的前提下，用于配置 bean 之间的依赖关系 Spring IOC &amp;amp; DI 的三种方式一、隐式的 bean 发现和自动装配1) 组件扫描[IOC]通过@component声明类来通知 Spring 创建指定的 bean，Spring 会扫描带@c">
+<meta name="keywords" content="Spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring读书笔记【01】IOC-DI">
+<meta property="og:url" content="http://yoursite.com/2018/09/30/Spring读书笔记【01】IOC-DI/index.html">
+<meta property="og:site_name" content="以顺 | 说">
+<meta property="og:description" content="关于 IOC 和 DIIOC 是指将 bean 的创建工作交由 Spring 来完成，而不是传统的在哪用就在哪手动 new DI 是在 IOC 的前提下，用于配置 bean 之间的依赖关系 Spring IOC &amp;amp; DI 的三种方式一、隐式的 bean 发现和自动装配1) 组件扫描[IOC]通过@component声明类来通知 Spring 创建指定的 bean，Spring 会扫描带@c">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-09-30T12:53:08.693Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring读书笔记【01】IOC-DI">
+<meta name="twitter:description" content="关于 IOC 和 DIIOC 是指将 bean 的创建工作交由 Spring 来完成，而不是传统的在哪用就在哪手动 new DI 是在 IOC 的前提下，用于配置 bean 之间的依赖关系 Spring IOC &amp;amp; DI 的三种方式一、隐式的 bean 发现和自动装配1) 组件扫描[IOC]通过@component声明类来通知 Spring 创建指定的 bean，Spring 会扫描带@c">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/09/30/Spring读书笔记【01】IOC-DI/"/>
+
+
+
+
+
+  <title>Spring读书笔记【01】IOC-DI | 以顺 | 说</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">以顺 | 说</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">subTitle</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/30/Spring读书笔记【01】IOC-DI/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="❤">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/icon.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="以顺 | 说">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Spring读书笔记【01】IOC-DI</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-30T15:20:42+08:00">
+                2018-09-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring读书笔记/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring读书笔记</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="关于-IOC-和-DI"><a href="#关于-IOC-和-DI" class="headerlink" title="关于 IOC 和 DI"></a>关于 IOC 和 DI</h2><p>IOC 是指将 bean 的创建工作交由 Spring 来完成，而不是传统的在哪用就在哪手动 new</p>
+<p>DI 是在 IOC 的前提下，用于配置 bean 之间的依赖关系</p>
+<h2 id="Spring-IOC-amp-DI-的三种方式"><a href="#Spring-IOC-amp-DI-的三种方式" class="headerlink" title="Spring IOC &amp; DI 的三种方式"></a>Spring IOC &amp; DI 的三种方式</h2><h3 id="一、隐式的-bean-发现和自动装配"><a href="#一、隐式的-bean-发现和自动装配" class="headerlink" title="一、隐式的 bean 发现和自动装配"></a>一、隐式的 bean 发现和自动装配</h3><h4 id="1-组件扫描-IOC"><a href="#1-组件扫描-IOC" class="headerlink" title="1) 组件扫描[IOC]"></a>1) 组件扫描[IOC]</h4><p>通过<code>@component</code>声明类来通知 Spring 创建指定的 bean，Spring 会扫描带<code>@component</code>的类(组件)，但组件扫描默认不开启，可以通过<code>@Configuration</code>声明一个配置类，<code>@ComponentScan</code>开启组件扫描。默认会扫描配置类所在包及其子包<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.yum.spring.config;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 组件扫描配置类</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@ComponentScan</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BeanScanConfig</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.yum.spring.config.scanBean;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 用于测试组件扫描的beanA</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ScanBeanA</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"ScanBeanA"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>也可以通过 xml 方式开启组件扫描(applicationContext.xml)<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version="1.0" encoding="utf-8" ?&gt;</span><br><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:context</span>=<span class="string">"http://www.springframework.org/schema/context"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://www.springframework.org/schema/beans</span></span></span><br><span class="line"><span class="tag"><span class="string">        http://www.springframework.org/schema/beans/spring-beans.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">        http://www.springframework.org/schema/context</span></span></span><br><span class="line"><span class="tag"><span class="string">        http://www.springframework.org/schema/context/spring-context.xsd"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 开启组件扫描 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">context:component-scan</span> <span class="attr">base-package</span>=<span class="string">"com.yum.spring.config"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 组件扫描测试用例</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RunWith</span>(SpringJUnit4ClassRunner.class)</span><br><span class="line"><span class="comment">// 类配置方式</span></span><br><span class="line"><span class="comment">// @ContextConfiguration(classes = BeanScanConfig.class)</span></span><br><span class="line"><span class="comment">// xml配置方式</span></span><br><span class="line"><span class="meta">@ContextConfiguration</span>(locations = <span class="string">"classpath*:applicationContext.xml"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BeanScanConfigTest</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> ScanBeanA scanBeanA;</span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testScanBeanA</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Assert.assertNotNull(scanBeanA);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="2-自动装配-DI"><a href="#2-自动装配-DI" class="headerlink" title="2) 自动装配[DI]"></a>2) 自动装配[DI]</h4><p>在<code>@component</code>声明的 bean 中，可以通过在构造器、setter 方法或其它普通方法上使用<code>@Autowired</code>来实现自动注入依赖<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.yum.spring.config.scanBean;</span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ScanBeanB</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> ScanBeanA scanBeanA;</span><br><span class="line">    <span class="comment">// Autowired用于构造器实现自动装配，测试发现此处不加@Autowired也可以实现DI，原因尚不清楚</span></span><br><span class="line">    <span class="comment">// @Autowired</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ScanBeanB</span><span class="params">(ScanBeanA scanBeanA)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.scanBeanA = scanBeanA;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        scanBeanA.print();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> ScanBeanA <span class="title">getScanBeanA</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scanBeanA;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// @Autowired用于setter()实现自动装配</span></span><br><span class="line">    <span class="comment">// @Autowired</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setScanBeanA</span><span class="params">(ScanBeanA scanBeanA)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.scanBeanA = scanBeanA;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// @Autowired用于任意方法实现自动装配</span></span><br><span class="line">    <span class="comment">// @Autowired</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">insertBeanA</span><span class="params">(ScanBeanA scanBeanA)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.scanBeanA = scanBeanA;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 自动装配测试用例</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RunWith</span>(SpringJUnit4ClassRunner.class)</span><br><span class="line"><span class="meta">@ContextConfiguration</span>(locations = <span class="string">"classpath*:applicationContext.xml"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BeanScanConfigTest</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> ScanBeanB scanBeanB;</span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testScanBeanB</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Assert.assertNotNull(scanBeanB.getScanBeanA());</span><br><span class="line">        scanBeanB.print();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="二、通过-java-显式配置"><a href="#二、通过-java-显式配置" class="headerlink" title="二、通过 java 显式配置"></a>二、通过 java 显式配置</h3><h4 id="1-IOC"><a href="#1-IOC" class="headerlink" title="1) IOC"></a>1) IOC</h4><p>通过<code>Configutation</code>声明配置类，但不使用<code>@ComponentScan</code>开启组件扫描，而是在配置类中通过<code>@Bean</code>声明方法，该方法返回的对象会自动注册成为 Spring 上下文中的 bean<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.yum.spring.explicitConfig.scanBean;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 用于测试显式配置的beanC</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ScanBeanC</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.print(<span class="string">"ScanBeanC"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.yum.spring.explicitConfig;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 显式配置类</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExplicitBeanConfig</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ScanBeanC <span class="title">scanBeanC</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ScanBeanC();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.yum.spring;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 显式配置测试用例</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RunWith</span>(SpringJUnit4ClassRunner.class)</span><br><span class="line"><span class="meta">@ContextConfiguration</span>(classes = ExplicitBeanConfig.class)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExplicitBeanScanConfigTest</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> ScanBeanC scanBeanC;</span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testScanBeanC</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Assert.assertNotNull(scanBeanC);</span><br><span class="line">        scanBeanC.print();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="2-DI"><a href="#2-DI" class="headerlink" title="2) DI"></a>2) DI</h4><p>在<code>@Bean</code>声明的方法中，如果要生成的 bean 依赖其他 beanA，可以在方法的入参增加 beanA，然后在方法体内使用构造器或 setter 方式注入，此种方式不要求 beanA 必须在 JavaConfig 中显式配置，但必须有通过其他方式实现了 IOC。也可以直接调用 JavaConfig 中<code>@Bean</code>声明的生成 beanA 的方法来实现，此种方式要求 beanA 必须在 JavaConfig 中显式配置<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.yum.spring.explicitConfig.scanBean;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 用于测试显式配置注入的beanD</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ScanBeanD</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> ScanBeanA scanBeanA;</span><br><span class="line">    <span class="keyword">private</span> ScanBeanC scanBeanC;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ScanBeanD</span><span class="params">(ScanBeanA scanBeanA, ScanBeanC scanBeanC)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.scanBeanA  = scanBeanA;</span><br><span class="line">        <span class="keyword">this</span>.scanBeanC = scanBeanC;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        scanBeanA.print();</span><br><span class="line">        scanBeanC.print();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> ScanBeanA <span class="title">getScanBeanA</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scanBeanA;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setScanBeanA</span><span class="params">(ScanBeanA scanBeanA)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.scanBeanA = scanBeanA;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> ScanBeanC <span class="title">getScanBeanC</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> scanBeanC;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setScanBeanC</span><span class="params">(ScanBeanC scanBeanC)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.scanBeanC = scanBeanC;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.yum.spring.explicitConfig;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 显式配置类</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExplicitBeanConfig</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ScanBeanC <span class="title">scanBeanC</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ScanBeanC();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ScanBeanD <span class="title">scanBeanD</span><span class="params">(ScanBeanA scanBeanA)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ScanBeanD(scanBeanA, scanBeanC());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.yum.spring;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 显式配置测试用例</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RunWith</span>(SpringJUnit4ClassRunner.class)</span><br><span class="line"><span class="meta">@ContextConfiguration</span>(classes = &#123;ExplicitBeanConfig.class, BeanScanConfig.class&#125;)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExplicitBeanScanConfigTest</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> ScanBeanD scanBeanD;</span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testScanBeanD</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Assert.assertNotNull(scanBeanD);</span><br><span class="line">        Assert.assertNotNull(scanBeanD.getScanBeanA());</span><br><span class="line">        Assert.assertNotNull(scanBeanD.getScanBeanC());</span><br><span class="line">        scanBeanD.print();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="三、通过-xml-显式配置"><a href="#三、通过-xml-显式配置" class="headerlink" title="三、通过 xml 显式配置"></a>三、通过 xml 显式配置</h3><h4 id="1-IOC-1"><a href="#1-IOC-1" class="headerlink" title="1) IOC"></a>1) IOC</h4><p>创建 xml 文件，通过<bean>声明一个 bean，此处不需要开启组件扫描，也不需要在 bean 上加<code>@component</code><br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version="1.0" encoding="utf-8" ?&gt;</span><br><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:context</span>=<span class="string">"http://www.springframework.org/schema/context"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://www.springframework.org/schema/beans</span></span></span><br><span class="line"><span class="tag"><span class="string">        http://www.springframework.org/schema/beans/spring-beans.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">        http://www.springframework.org/schema/context</span></span></span><br><span class="line"><span class="tag"><span class="string">        http://www.springframework.org/schema/context/spring-context.xsd"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"xmlScanBeanA"</span> <span class="attr">class</span>=<span class="string">"com.yum.spring.xmlConfig.scanBean.xmlScanBeanA"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure></bean></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 用于测试xml配置的scanBeanA</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">xmlScanBeanA</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.print(<span class="string">"xmlScanBeanA"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.yum.spring;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * XML配置IOC测试用例</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RunWith</span>(SpringJUnit4ClassRunner.class)</span><br><span class="line"><span class="meta">@ContextConfiguration</span>(locations = <span class="string">"classpath*:applicationContext.xml"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">XmlScanConfigTest</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> xmlScanBeanA xmlScanBeanA;</span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testXmlScanBeanA</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Assert.assertNotNull(xmlScanBeanA);</span><br><span class="line">        xmlScanBeanA.print();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="2-DI-1"><a href="#2-DI-1" class="headerlink" title="2) DI"></a>2) DI</h4><p>主要分为构造器注入和 setter 注入，可注入 bean、字面量、集合等<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.yum.spring.xmlConfig.scanBean;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 用于测试XML方式DI的scanBeanB</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">xmlScanBeanB</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> xmlScanBeanA xmlScanBeanA;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> List&lt;xmlScanBeanA&gt; scanBeanAList;</span><br><span class="line">    <span class="keyword">private</span> List&lt;String&gt; nameList;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">xmlScanBeanB</span><span class="params">()</span></span>&#123;&#125;;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">xmlScanBeanB</span><span class="params">(xmlScanBeanA xmlScanBeanA, String name, List&lt;xmlScanBeanA&gt; scanBeanAList, List&lt;String&gt; nameList)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.xmlScanBeanA = xmlScanBeanA;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">        <span class="keyword">this</span>.scanBeanAList = scanBeanAList;</span><br><span class="line">        <span class="keyword">this</span>.nameList = nameList;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> xmlScanBeanA <span class="title">getXmlScanBeanA</span><span class="params">()</span> </span>&#123;<span class="keyword">return</span> xmlScanBeanA;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setXmlScanBeanA</span><span class="params">(xmlScanBeanA xmlScanBeanA)</span> </span>&#123;<span class="keyword">this</span>.xmlScanBeanA = xmlScanBeanA;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;<span class="keyword">return</span> name;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123; <span class="keyword">this</span>.name = name;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;xmlScanBeanA&gt; <span class="title">getScanBeanAList</span><span class="params">()</span> </span>&#123;<span class="keyword">return</span> scanBeanAList;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setScanBeanAList</span><span class="params">(List&lt;xmlScanBeanA&gt; scanBeanAList)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.scanBeanAList = scanBeanAList;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;String&gt; <span class="title">getNameList</span><span class="params">()</span> </span>&#123;<span class="keyword">return</span> nameList;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setNameList</span><span class="params">(List&lt;String&gt; nameList)</span> </span>&#123;<span class="keyword">this</span>.nameList = nameList;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- 构造器注入 --&gt;</span><br><span class="line">&lt;bean id=<span class="string">"xmlScanBeanB1"</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">"com.yum.spring.xmlConfig.scanBean.xmlScanBeanB"</span>&gt;</span><br><span class="line">        &lt;constructor-arg ref=<span class="string">"xmlScanBeanA"</span>/&gt;</span><br><span class="line">        &lt;constructor-arg value=<span class="string">"xmlScanBeanBName"</span>/&gt;</span><br><span class="line">        &lt;constructor-arg&gt;</span><br><span class="line">            &lt;list&gt;</span><br><span class="line">                &lt;ref bean=<span class="string">"xmlScanBeanA"</span>/&gt;</span><br><span class="line">                &lt;ref bean=<span class="string">"xmlScanBeanA"</span>/&gt;</span><br><span class="line">            &lt;/list&gt;</span><br><span class="line">        &lt;/constructor-arg&gt;</span><br><span class="line">        &lt;constructor-arg&gt;</span><br><span class="line">            &lt;list&gt;</span><br><span class="line">                &lt;value&gt;xmlScanBeanBName1&lt;/value&gt;</span><br><span class="line">                &lt;value&gt;xmlScanBeanBName2&lt;/value&gt;</span><br><span class="line">            &lt;/list&gt;</span><br><span class="line">        &lt;/constructor-arg&gt;</span><br><span class="line">&lt;/bean&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- setter注入 --&gt;</span><br><span class="line">&lt;bean id=<span class="string">"xmlScanBeanB2"</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">"com.yum.spring.xmlConfig.scanBean.xmlScanBeanB"</span>&gt;</span><br><span class="line">        &lt;property name=<span class="string">"xmlScanBeanA"</span> ref=<span class="string">"xmlScanBeanA"</span>/&gt;</span><br><span class="line">        &lt;property name=<span class="string">"name"</span> value=<span class="string">"xmlScanBeanBName"</span>/&gt;</span><br><span class="line">        &lt;property name=<span class="string">"scanBeanAList"</span>&gt;</span><br><span class="line">            &lt;list&gt;</span><br><span class="line">                &lt;ref bean=<span class="string">"xmlScanBeanA"</span>/&gt;</span><br><span class="line">                &lt;ref bean=<span class="string">"xmlScanBeanA"</span>/&gt;</span><br><span class="line">            &lt;/list&gt;</span><br><span class="line">        &lt;/property&gt;</span><br><span class="line">        &lt;property name=<span class="string">"nameList"</span>&gt;</span><br><span class="line">            &lt;list&gt;</span><br><span class="line">                &lt;value&gt;name1&lt;/value&gt;</span><br><span class="line">                &lt;value&gt;name2&lt;/value&gt;</span><br><span class="line">            &lt;/list&gt;</span><br><span class="line">        &lt;/property&gt;</span><br><span class="line">&lt;/bean&gt;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spring/" rel="tag"># Spring</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/img/icon.jpg"
+                alt="❤" />
+            
+              <p class="site-author-name" itemprop="name">❤</p>
+              <p class="site-description motion-element" itemprop="description">简单一点，再简单一点</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#关于-IOC-和-DI"><span class="nav-text">关于 IOC 和 DI</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spring-IOC-amp-DI-的三种方式"><span class="nav-text">Spring IOC &amp; DI 的三种方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、隐式的-bean-发现和自动装配"><span class="nav-text">一、隐式的 bean 发现和自动装配</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-组件扫描-IOC"><span class="nav-text">1) 组件扫描[IOC]</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-自动装配-DI"><span class="nav-text">2) 自动装配[DI]</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、通过-java-显式配置"><span class="nav-text">二、通过 java 显式配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-IOC"><span class="nav-text">1) IOC</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-DI"><span class="nav-text">2) DI</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、通过-xml-显式配置"><span class="nav-text">三、通过 xml 显式配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-IOC-1"><span class="nav-text">1) IOC</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-DI-1"><span class="nav-text">2) DI</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="author" itemprop="copyrightHolder">❤ yishun</span>
+
+  
+</div>
+
+<!--
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+-->
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
